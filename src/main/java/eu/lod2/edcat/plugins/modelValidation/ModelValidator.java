@@ -35,7 +35,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
 
   @Override
   public void handleAtCreate(AtContext context) throws ActionAbortException {
-    
+
   }
 
   @Override
