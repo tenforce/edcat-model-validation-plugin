@@ -2,12 +2,16 @@ package eu.lod2.edcat.plugins.modelValidation;
 
 import eu.lod2.edcat.utils.Catalog;
 import eu.lod2.edcat.utils.SparqlEngine;
+import eu.lod2.hooks.constraints.Constraint;
 import eu.lod2.hooks.constraints.Priority;
+import eu.lod2.hooks.contexts.AtContext;
 import eu.lod2.hooks.handlers.dcat.AtCreateHandler;
 import eu.lod2.hooks.handlers.dcat.AtUpdateHandler;
 import eu.lod2.hooks.util.ActionAbortException;
+import org.apache.commons.lang3.ArrayUtils;
 import org.openrdf.model.Model;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 
@@ -20,18 +24,22 @@ import java.util.Collection;
  */
 public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
 
+  // --- PRIORITY
+
   @Override
   public Collection<Priority> getConstraints(String hook) {
-    return null;
+    return Arrays.asList(Constraint.LATE);
+  }
+
+  // --- HOOKS
+
+  @Override
+  public void handleAtCreate(AtContext context) throws ActionAbortException {
+    
   }
 
   @Override
-  public Model handleAtCreate(Catalog catalog, Model statements, SparqlEngine engine) throws ActionAbortException {
-    return null;
-  }
-
-  @Override
-  public void handleAtUpdate(Catalog catalog, Model statements, SparqlEngine engine) throws ActionAbortException {
+  public void handleAtUpdate(AtContext context) throws ActionAbortException {
 
   }
 }
