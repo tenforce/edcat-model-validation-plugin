@@ -2,17 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>eu.lod2.edcat</groupId>
-  <artifactId>model-validation-plugin</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>eu.lod2.edcat</groupId>
+    <artifactId>model-validation-plugin</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-  <dependencies>
-    <dependency>
-      <groupId>eu.lod2.edcat</groupId>
-      <artifactId>e-dcat-api-hooks</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>eu.lod2.edcat</groupId>
+            <artifactId>edcat-plugin-base</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+    </dependencies>
 </project>
