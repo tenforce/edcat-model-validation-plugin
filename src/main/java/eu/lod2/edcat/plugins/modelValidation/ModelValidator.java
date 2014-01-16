@@ -34,21 +34,21 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   // --- PRIORITY
 
   @Override
-  public Collection<Priority> getConstraints(String hook) {
-    return Arrays.asList(Constraint.LATE);
+  public Collection<Priority> getConstraints( String hook ) {
+    return Arrays.asList( Constraint.LATE );
   }
 
 
   // --- HOOKS
 
   @Override
-  public void handleAtCreate(AtContext context) throws ActionAbortException {
-    handleValidation(context);
+  public void handleAtCreate( AtContext context ) throws ActionAbortException {
+    handleValidation( context );
   }
 
   @Override
-  public void handleAtUpdate(AtContext context) throws ActionAbortException {
-    handleValidation(context);
+  public void handleAtUpdate( AtContext context ) throws ActionAbortException {
+    handleValidation( context );
   }
 
 
@@ -62,11 +62,11 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @throws ActionAbortException Throws an ActionAbortException if the model is not valid, thereby
    *                              canceling the request.
    */
-  private void handleValidation(AtContext context) throws ActionAbortException {
+  private void handleValidation( AtContext context ) throws ActionAbortException {
     try {
-      assertValidatedModel(context);
-    } catch (InvalidModelException e) {
-      throw new ActionAbortException("Invalid model, rule did not hold");
+      assertValidatedModel( context );
+    } catch ( InvalidModelException e ) {
+      throw new ActionAbortException( "Invalid model, rule did not hold" );
     }
   }
 
@@ -79,12 +79,12 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @param ctx Context which contains the model to validate.
    * @throws InvalidModelException Thrown iff the model is discovered to be invalid.
    */
-  private void assertValidatedModel(AtContext ctx) throws InvalidModelException {
+  private void assertValidatedModel( AtContext ctx ) throws InvalidModelException {
     try {
       setupTmpRepository();
-      this.tmpRepositoryConnection.add(ctx.getStatements());
-      verifyAllConstraints(ctx);
-    } catch (RepositoryException e) {
+      this.tmpRepositoryConnection.add( ctx.getStatements() );
+      verifyAllConstraints( ctx );
+    } catch ( RepositoryException e ) {
       e.printStackTrace();
     } finally {
       destroyTmpRepository();
@@ -109,7 +109,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @throws RepositoryException Thrown when the repository could not be initialized.
    */
   private void setupTmpRepository() throws RepositoryException {
-    this.tmpRepository = new SailRepository(new MemoryStore());
+    this.tmpRepository = new SailRepository( new MemoryStore() );
     this.tmpRepository.initialize();
     this.tmpRepositoryConnection = this.tmpRepository.getConnection();
   }
@@ -123,53 +123,48 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   }
 
 
-
   // --- MANAGING THE CONSTRAINTS
 
   /**
    * Finds and verifies all constraints which apply to context.
+   *
    * @param context Context for which the constraints will be verified.
    */
-  private void verifyAllConstraints(AtContext context) throws InvalidModelException {
-    for(SparqlConstraint constraint : getSparqlConstraints(context.getEngine(), context.getCatalog()))
-      if( ! verifySparqlConstraint(constraint.getQuery(), constraint.getConstraint()) )
-        throw new InvalidModelException(context.getCatalog(), constraint.getConstraint());
+  private void verifyAllConstraints( AtContext context ) throws InvalidModelException {
+    for ( SparqlConstraint constraint : getSparqlConstraints( context.getEngine(), context.getCatalog() ) )
+      if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
+        throw new InvalidModelException( context.getCatalog(), constraint.getConstraint() );
   }
 
   /**
    * Fetches all constraints which apply to catalog from engine.
    *
-   * @param engine Engine which has a connection to the configuration graph.
+   * @param engine  Engine which has a connection to the configuration graph.
    * @param catalog Catalog for which we want to retrieve the constraints.
    * @return Collection of SparqlConstraints which aught to be verified.
-   *
-   * todo: there is no rdf syntax for specifying the constraint.  ergo, anything specified as constraint is accepted.
    */
-  private Collection<SparqlConstraint> getSparqlConstraints(SparqlEngine engine, Catalog catalog){
-    /* TODO: factor in Constants.getConfigGraphUri() */
-    String configURI = "http://lod2.tenforce.com/edcat/example/config"; // Constants.getConfigGraphUri(); //.getLocalName();
+  private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, Catalog catalog ) {
 
     String query = "" +
-        " PREFIX : <" + configURI + ">" +
-        " SELECT ?constraint, ?query " +
-        " WHERE { " +
-        "   ?queryValidation a :QueryValidation;" +
-        "                    :constraint ?constraint; " +
-        "                    :sparqlQuery ?query; " +
-        "                    ^:validatedBy <" + catalog.getURI().toString() + ">." +
+        Constants.SPARQL_PREFIXES +
+        " SELECT ?rule, ?sparqlQuery \n" +
+        " WHERE {\n" +
+        "   ?rule a                   cterms:ValidationRule;\n" +
+        "         cterms:sparqlQuery  ?sparqlQuery;\n" +
+        "         ^cterms:validatedBy <" + catalog.getURI().toString() + ">.\n" +
         " }";
 
     QueryResult results = engine.sparqlSelect( query );
 
     Collection<SparqlConstraint> constraints = new ArrayList<SparqlConstraint>();
-    for(Map<String,String> result : results)
+    for ( Map<String, String> result : results )
       try {
-        QueryResultConstraint constraint = QueryResultConstraintBuilder.fromSparql(result.get("query"),engine);
-        String sparqlQuery = result.get("query");
+        QueryResultConstraint constraint = QueryResultConstraintBuilder.fromSparql( result.get( "rule" ), engine );
+        String sparqlQuery = result.get( "sparqlQuery" );
         // we ignore the constraint property for now, as it's always Exactly.NOTHING
-        constraints.add(new SparqlConstraint(constraint, sparqlQuery));
-      } catch (UnknownQueryResultConstraintException e) {
-        LogFactory.getLog("ModelValidator").error(e.getMessage());
+        constraints.add( new SparqlConstraint( constraint, sparqlQuery ) );
+      } catch ( UnknownQueryResultConstraintException e ) {
+        LogFactory.getLog( "ModelValidator" ).error( e.getMessage() );
       }
 
     return constraints;
@@ -178,36 +173,36 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   /**
    * Verify the results of the supplied SPARQL constraint to be within the accepted boundaries.
    *
-   * @param query SPARQL query which will yield the results.
+   * @param query      SPARQL query which will yield the results.
    * @param validators Set of constraints to which the query should abide.
    * @return true iff each of the constraints was valid for the supplied query.
    */
-  private boolean verifySparqlConstraint(String query, QueryResultConstraint ...validators) {
+  private boolean verifySparqlConstraint( String query, QueryResultConstraint... validators ) {
     try {
-      TupleQueryResult sparqlResult = this.tmpRepositoryConnection.prepareTupleQuery(QueryLanguage.SPARQL, query).evaluate();
+      TupleQueryResult sparqlResult = this.tmpRepositoryConnection.prepareTupleQuery( QueryLanguage.SPARQL, query ).evaluate();
 
       // convert sparqlResult to QueryResult
       QueryResult results = new QueryResult();
-      while (sparqlResult.hasNext()) {
+      while ( sparqlResult.hasNext() ) {
         BindingSet set = sparqlResult.next();
         Map<String, String> currentRow = new HashMap<String, String>();
-        for (String name : set.getBindingNames())
-          currentRow.put(name, set.getValue(name).stringValue());
-        results.add(currentRow);
+        for ( String name : set.getBindingNames() )
+          currentRow.put( name, set.getValue( name ).stringValue() );
+        results.add( currentRow );
       }
 
       // verify QueryResult
-      for( QueryResultConstraint validator : validators )
-        if( ! validator.valid( results ) )
+      for ( QueryResultConstraint validator : validators )
+        if ( !validator.valid( results ) )
           return false;
 
       return true;
-    } catch (RepositoryException e) {
-      throw new IllegalStateException(e);
-    } catch (MalformedQueryException e) {
-      throw new IllegalArgumentException(e);
-    } catch (QueryEvaluationException e) {
-      throw new IllegalArgumentException(e);
+    } catch ( RepositoryException e ) {
+      throw new IllegalStateException( e );
+    } catch ( MalformedQueryException e ) {
+      throw new IllegalArgumentException( e );
+    } catch ( QueryEvaluationException e ) {
+      throw new IllegalArgumentException( e );
     }
   }
 }

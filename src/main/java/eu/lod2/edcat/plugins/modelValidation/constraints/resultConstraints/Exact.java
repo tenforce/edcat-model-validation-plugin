@@ -11,24 +11,29 @@ public class Exact extends QueryResultConstraint {
   private int amount;
 
   /**
-   * Constructs a new exact match.
-   *
+   * Constructs a new exact match.  Uses a short and easy to read syntax.
+   * <p/>
    * Eg: {@code Exact.ly(4)} would yield a
    *
-   * @param amount
-   * @return
+   * @param amount Amount of elements which we expect to have in a successful match.
+   * @return QueryResultConstraint which only accepts a QueryResult which has exactly amount
+   * matches.
    */
-  public static Exact ly(int amount){
+  public static Exact ly( int amount ) {
     return new Exact( amount );
   }
 
-  private Exact( int amount ){
+  /**
+   * Simple constructor for the Exact class.
+   *
+   * @param amount Amount of elements which we expect to have in a successful match.
+   */
+  private Exact( int amount ) {
     this.amount = amount;
   }
 
-
   @Override
-  public boolean valid(QueryResult queryResult) {
+  public boolean valid( QueryResult queryResult ) {
     return queryResult.size() == amount;
   }
 }

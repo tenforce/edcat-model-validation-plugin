@@ -3,6 +3,7 @@ package eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints;
 /**
  * Factory/singleton collection which makes the construction of Exact matches cleaner.
  */
+@SuppressWarnings( {"UnusedDeclaration"} )
 public class Exactly {
 
   /** contain no results */
