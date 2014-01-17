@@ -37,6 +37,6 @@ public class Less extends QueryResultConstraint {
 
   @Override
   public boolean valid(QueryResult queryResult) {
-    return queryResult.size() > this.lessThanThis;
+    return queryResult.size() < this.lessThanThis;
   }
 }

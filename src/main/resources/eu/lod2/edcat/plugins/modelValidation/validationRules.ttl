@@ -1,0 +1,1033 @@
+@base <http://lod2.tenforce.com/edcat/example/config/>.
+@prefix : <http://lod2.tenforce.com/edcat/example/config/>.
+@prefix edcat: <http://lod2.tenforce.com/edcat/terms/>.
+@prefix cterms: <http://lod2.tenforce.com/edcat/terms/config/>.
+@prefix catalogs: <http://lod2.tenforce.com/edcat/catalogs/>.
+
+cterms:validation-rule0 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "description is a required property for dataset";
+    cterms:message "no description defined for this dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        prefix dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        OPTIONAL {?s dcterms:description ?desc}.
+        FILTER (!BOUND(?desc)).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+
+cterms:validation-rule2 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:description should be a literal";
+    cterms:message "dcterms:description should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:description ?o.
+        FILTER(!isLiteral(?o))
+        BIND(dcterms:description AS ?p).
+        }".
+
+cterms:validation-rule3 a cterms:ValidationRule;    
+    cterms:matchExactly 0;
+    cterms:description "dcterms:title is a required property for Dataset";
+    cterms:message "dcterms:title is a required property for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s dcterms:title ?title})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+    
+cterms:validation-rule4 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:title should be a literal";
+    cterms:message "dcterms:title should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:title ?o.
+        FILTER(!isLiteral(?o))
+        BIND(dcterms:title AS ?p).
+        }".
+    
+cterms:validation-rule5 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:contactPoint is a recommended property for Dataset";
+    cterms:message "adms:contactPoint is a recommended property for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX adms:<http://www.w3.org/ns/adms#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s adms:contactPoint ?cPoint})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+
+cterms:validation-rule6 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:contactPoint should be a resource";
+    cterms:message "adms:contactPoint should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX adms:<http://www.w3.org/ns/adms#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:contactPoint ?o.
+        FILTER(!isUri(?o)).
+        BIND(adms:contactPoint AS ?p).
+        }".
+    
+cterms:validation-rule7 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:contactPoint should be a vCard";
+    cterms:message "adms:contactPoint should be a vCard";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX adms:<http://www.w3.org/ns/adms#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:contactPoint ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a <http://www.w3.org/2006/vcard/ns#VCard>}).
+        BIND(adms:contactPoint AS ?p).
+        }".
+    
+cterms:validation-rule8 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:distribution should be a resource";
+    cterms:message "dcat:distribution should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:distribution ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcat:distribution AS ?p).
+        }".
+    
+cterms:validation-rule9 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:distribution is a recommended property for Dataset";
+    cterms:message "dcat:distribution is a recommended property for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s dcat:distribution ?dist})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+    
+cterms:validation-rule10 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:distribution should be a Distribution";
+    cterms:message "dcat:distribution should be a Distribution";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:distribution ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcat:Distribution}).
+        BIND(dcat:distribution AS ?p).
+        }".
+    
+cterms:validation-rule11 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:keyword is a recommended property for Dataset";
+    cterms:message "dcat:keyword is a recommended property for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s dcat:keyword ?key})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+    
+cterms:validation-rule12 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:keyword should be a literal";
+    cterms:message "dcat:keyword should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:keyword ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcat:keyword AS ?p).
+        }".
+    
+cterms:validation-rule13 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:publisher is a recommended property for Dataset";
+    cterms:message "dcterms:publisher is a recommended property for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s dcterms:publisher ?pub})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+    
+cterms:validation-rule14 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:publisher has maximum cardinality of 1 for Dataset";
+    cterms:message "dcterms:publisher has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s (rdf:type AS ?p) (dcat:Dataset AS ?o)
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:publisher ?pub.
+        } GROUP BY ?s HAVING(COUNT(?pub > 1))".
+    
+cterms:validation-rule15 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:publisher should be a resource";
+    cterms:message "dcterms:publisher should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s (dcterms:publisher as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:publisher ?o.
+        FILTER(!isURI(?o)).
+        }".
+    
+cterms:validation-rule16 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:publisher should be a foaf:Agent";
+    cterms:message "dcterms:publisher should be a foaf:Agent";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:publisher as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:publisher ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a foaf:Agent}).
+        }".
+    
+cterms:validation-rule17 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:theme is a recommended property for Dataset";
+    cterms:message "dcat:theme is a recommended property for Dataset";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        FILTER(!(EXISTS { ?s dcat:theme ?theme})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Dataset AS ?o).
+        }".
+    
+cterms:validation-rule18 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:theme should be a resource";
+    cterms:message "dcat:theme should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:theme ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcat:theme AS ?p).
+        }".
+    
+cterms:validation-rule19 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:conformsTo should be a resource";
+    cterms:message "dcterms:conformsTo should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:conformsTo ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:conformsTo AS ?p).
+        }".
+    
+cterms:validation-rule20 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:conformsTo should be a dcterms:Standard";
+    cterms:message "dcterms:conformsTo should be a dcterms:Standard";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:conformsTo as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset;
+           dcterms:conformsTo ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcterms:Standard}).
+        }".
+     
+cterms:validation-rule21 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:accrualPeriodicity should be a resource";
+    cterms:message "dcterms:accrualPeriodicity should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:accrualPeriodicity ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:accrualPeriodicity AS ?p).
+        }".
+    
+cterms:validation-rule22 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:accrualPeriodicity should be a dcterms:Frequency";
+    cterms:message "dcterms:accrualPeriodicity should be a dcterms:Frequency";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:accrualPeriodicity as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:accrualPeriodicity ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcterms:Frequency}).
+        }".
+    
+cterms:validation-rule23 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "dcterms:accrualPeriodicity has maximum cardinality of 1 for Dataset";
+    cterms:message "dcterms:accrualPeriodicity has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:accrualPeriodicity ?period.
+        }".
+    
+cterms:validation-rule24 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:identifier should be a literal";
+    cterms:message "dcterms:identifier should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:identifier ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcterms:identifier AS ?p).
+        }".
+    
+cterms:validation-rule25 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:landingPage should be a resource";
+    cterms:message "dcat:landingPage should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:landingPage ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcat:landingPage AS ?p).
+        }".
+    
+cterms:validation-rule26 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "dcat:landingPage has maximum cardinality of 1 for Dataset";
+    cterms:message "dcat:landingPage has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:landingPage ?page.
+        }".
+    
+cterms:validation-rule27 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:landingPage should be a foaf:Document";
+    cterms:message "dcat:landingPage should be a foaf:Document";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcat:landingPage as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcat:landingPage ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a foaf:Document}).
+        }".
+    
+cterms:validation-rule28 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterm:language should be a resource";
+    cterms:message "dcterm:language should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:language ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:language AS ?p).
+        }".
+    
+cterms:validation-rule29 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:language should be a dcterms:LinguisticSystem";
+    cterms:message "dcterms:language should be a dcterms:LinguisticSystem";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:language as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:language ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcterms:LinguisticSystem}).
+        }".
+    
+cterms:validation-rule30 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:identifier should be a resource";
+    cterms:message "adms:identifier should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "prefix adms:<http://www.w3.org/ns/adms#>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:version ?o.
+        FILTER(!isURI(?o)).
+        BIND(adms:versionNotes AS ?p).
+        }".
+    
+cterms:validation-rule31 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:identifier should be a adms:Identifier";
+    cterms:message "adms:identifier should be a adms:Identifier";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        prefix adms:<http://www.w3.org/ns/adms#>
+        SELECT
+        ?s (adms:identifier as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:identifier ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a adms:Identifier}).
+        }".
+    
+cterms:validation-rule32 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:issued should be literal";
+    cterms:message "dcterms:issued should be literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:issued ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcterms:issued AS ?p).
+        }".
+    
+cterms:validation-rule33 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "dcterms:issued has maximum cardinality of 1 for Dataset";
+    cterms:message "dcterms:issued has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:issued ?issued.
+        }".
+    
+cterms:validation-rule34 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:spatial should be resource";
+    cterms:message "dcterms:spatial should be resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:spatial ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:spatial AS ?p).
+        }".
+    
+cterms:validation-rule35 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:spatial should be a dcterms:Location";
+    cterms:message "dcterms:spatial should be a dcterms:Location";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:spatial as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:spatial ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcterms:Location}).
+        }".
+    
+cterms:validation-rule36 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:temporal should be resource";
+    cterms:message "dcterms:temporal should be resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:temporal ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:temporal AS ?p).
+        }".
+    
+cterms:validation-rule37 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:temporal should be a dcterms:PeriodOfTime";
+    cterms:message "dcterms:temporal should be a dcterms:PeriodOfTime";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT
+        ?s (dcterms:temporal as ?p) ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:temporal ?o.
+        ?o ?pred ?val.
+        FILTER(!EXISTS {?o a dcterms:PeriodOfTime}).
+        }".
+    
+cterms:validation-rule38 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:modified should be a literal";
+    cterms:message "dcterms:modified should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:modified ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcterms:modified AS ?p).
+        }".
+    
+cterms:validation-rule39 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "dcterms:modified has maximum cardinality of 1 for Dataset";
+    cterms:message "dcterms:modified has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s dcterms:modified ?modified.
+        }".
+    
+cterms:validation-rule40 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "adms:version has maximum cardinality of 1 for Dataset";
+    cterms:message "adms:version has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "prefix adms:<http://www.w3.org/ns/adms#>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:version ?version.
+        }".
+    
+cterms:validation-rule41 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:version should be a literal";
+    cterms:message "adms:version should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "prefix adms:<http://www.w3.org/ns/adms#>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:version ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(adms:version AS ?p).
+        }".
+    
+cterms:validation-rule42 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:versionNotes should be literal";
+    cterms:message "adms:versionNotes should be literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "prefix adms:<http://www.w3.org/ns/adms#>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:version ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(adms:versionNotes AS ?p).
+        }".
+    
+cterms:validation-rule43 a cterms:ValidationRule;
+    cterms:matchLessThan 2;
+    cterms:description "adms:versionNotes has maximum cardinality of 1 for Dataset";
+    cterms:message "adms:versionNotes has maximum cardinality of 1 for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "prefix adms:<http://www.w3.org/ns/adms#>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:versionNotes ?versionNotes.
+        }".
+    
+cterms:validation-rule44 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:accessURL is a required property for Distribution";
+    cterms:message "dcat:accessURL is a required property for Dataset";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        FILTER(!(EXISTS { ?s dcat:accessURL ?desc})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Distribution AS ?o).
+        }".
+    
+cterms:validation-rule45 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:accessURL should be a resource";
+    cterms:message "dcat:accessURL should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcat:accessURL ?o.
+        FILTER(!isURI(?o))
+        BIND(dcat:accessURL AS ?p).
+        }".
+    
+cterms:validation-rule46 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:description is a recommended property for Distribution";
+    cterms:message "dcterms:description is a recommended property for Distribution";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        FILTER(!(EXISTS { ?s dcterms:description ?desc})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Distribution AS ?o).
+        }".
+    
+cterms:validation-rule47 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:description should be a literal";
+    cterms:message "dcterms:description should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:description ?o.
+        FILTER(!isLiteral(?o))
+        BIND(dcterms:description AS ?p).
+        }".
+    
+cterms:validation-rule48 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:format is a recommended property for Distribution";
+    cterms:message "dcterms:format is a recommended property for Distribution";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        FILTER(!(EXISTS { ?s dcterms:format ?desc})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Distribution AS ?o).
+        }".
+    
+cterms:validation-rule49 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:format should be a resource";
+    cterms:message "dcterms:format should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:format ?o.
+        FILTER(!isURI(?o))
+        BIND(dcterms:format AS ?p).
+        }".
+    
+cterms:validation-rule50 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:format has a maximum cardinality of 1";
+    cterms:message "dcterms:format has a maximum cardinality of 1";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s (rdf:type as ?p) (dcat:Distribution as ?o)
+        WHERE {
+        ?s rdf:type dcat:Distribution.
+        ?s dcterms:format ?o
+        } GROUP BY ?s HAVING (count(?o) > 1)".
+    
+cterms:validation-rule51 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:license is a recommended property for Distribution";
+    cterms:message "dcterms:license is a recommended property for Distribution";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        FILTER(!(EXISTS { ?s dcterms:license ?desc})).
+        BIND(rdf:type AS ?p).
+        BIND(dcat:Distribution AS ?o).
+        }".
+    
+cterms:validation-rule52 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:license should be a resource";
+    cterms:message "dcterms:license should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:license ?o.
+        FILTER(!isURI(?o))
+        BIND(dcat:accessURL AS ?p).
+        }".
+    
+cterms:validation-rule53 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:license has a maximum cardinality of 1";
+    cterms:message "dcterms:license has a maximum cardinality of 1";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT ?s (rdf:type as ?p) (dcat:Distribution as ?o)
+        WHERE {
+        ?s rdf:type dcat:Distribution.
+        ?s dcterms:license ?o
+        } GROUP BY ?s HAVING (count(?o) > 1)".
+    
+cterms:validation-rule54 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:byteSize should be a literal";
+    cterms:message "dcterms:byteSize should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:byteSize ?o.
+        FILTER(!isLiteral(?o))
+        BIND(dcterms:byteSize AS ?p).
+        }".
+    
+cterms:validation-rule55 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:downloadURL should be a resource";
+    cterms:message "dcat:downloadURL should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcat:downloadURL ?o.
+        FILTER(!isURI(?o))
+        BIND(dcat:downloadURL AS ?p).
+        }".
+    
+cterms:validation-rule56 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcat:mediaType should be a resource";
+    cterms:message "dcat:mediaType should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcat:mediaType ?o.
+        FILTER(!isURI(?o))
+        BIND(dcat:mediaType AS ?p).
+        }".
+    
+cterms:validation-rule57 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:issued should be literal";
+    cterms:message "dcterms:issued should be literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:issued ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcterms:issued AS ?p).
+        }".
+    
+cterms:validation-rule58 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:rights should be a resource";
+    cterms:message "dcterms:rights should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:rights ?o.
+        FILTER(!isURI(?o)).
+        BIND(dcterms:rights AS ?p).
+        }".
+    
+cterms:validation-rule59 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "adms:status should be a resource";
+    cterms:message "adms:status should be a resource";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX adms:<http://www.w3.org/ns/adms#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Dataset.
+        ?s adms:status ?o.
+        FILTER(!isUri(?o)).
+        BIND(adms:status AS ?p).
+        }".
+    
+cterms:validation-rule60 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:title should be a literal";
+    cterms:message "dcterms:title should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:title ?o.
+        FILTER(!isLiteral(?o))
+        BIND(dcterms:title AS ?p).
+        }".
+    
+cterms:validation-rule61 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "dcterms:modified should be a literal";
+    cterms:message "dcterms:modified should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        SELECT
+        ?s ?p ?o
+        WHERE {
+        ?s a dcat:Distribution.
+        ?s dcterms:modified ?o.
+        FILTER(!isLiteral(?o)).
+        BIND(dcterms:modified AS ?p).
+        }".
+    
+cterms:validation-rule62 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "name is a required property for Agent";
+    cterms:message "name is a required property for Agent";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT ?s ?p ?o
+        WHERE {
+        ?s a foaf:Agent.
+        FILTER(!EXISTS {?s foaf:name ?name}).
+        BIND (rdf:type as ?p).
+        BIND (foaf:Agent as ?o).
+        }".
+    
+cterms:validation-rule63 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "foaf:name should be a literal";
+    cterms:message "foaf:name should be a literal";
+    cterms:severity cterms:error;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT ?s ?p ?o
+        WHERE {
+        ?s a foaf:Agent.
+        ?s foaf:name ?o.
+        FILTER(!isLiteral(?o)).
+        BIND (foaf:name as ?p)
+        }".
+    
+cterms:validation-rule64 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "type is a recommended property for Agent";
+    cterms:message "type is a recommended property for Agent";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT ?s ?p ?o
+        WHERE {
+        ?s a foaf:Agent.
+        FILTER(!EXISTS {?s dcterms:type ?type}).
+        BIND (rdf:type as ?p).
+        BIND (foaf:Agent as ?o).
+        }".
+    
+cterms:validation-rule65 a cterms:ValidationRule;
+    cterms:matchExactly 0;
+    cterms:description "type should be a resource";
+    cterms:message "type should be a resource";
+    cterms:severity cterms:warning;
+    cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
+        PREFIX dcat:<http://www.w3.org/ns/dcat#>
+        PREFIX foaf:<http://xmlns.com/foaf/0.1/>
+        SELECT ?s ?p ?o
+        WHERE {
+        ?s a foaf:Agent.
+        ?s dcterms:type ?o.
+        FILTER(!isUri(?o)).
+        BIND (dcterms:type as ?p)
+        }".

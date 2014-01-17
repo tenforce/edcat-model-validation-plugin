@@ -1,7 +1,7 @@
 package eu.lod2.edcat.plugins.modelValidation;
 
+import eu.lod2.edcat.plugins.modelValidation.constraints.InvalidModelException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraint;
-import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraintBuilder;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.UnknownQueryResultConstraintException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints.SparqlConstraint;
 import eu.lod2.edcat.utils.Catalog;
@@ -14,6 +14,7 @@ import eu.lod2.hooks.handlers.dcat.AtCreateHandler;
 import eu.lod2.hooks.handlers.dcat.AtUpdateHandler;
 import eu.lod2.hooks.util.ActionAbortException;
 import org.apache.commons.logging.LogFactory;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
 import org.openrdf.repository.RepositoryException;
 import org.openrdf.repository.sail.SailRepository;
@@ -62,11 +63,18 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @throws ActionAbortException Throws an ActionAbortException if the model is not valid, thereby
    *                              canceling the request.
    */
+  @SuppressWarnings( "all" ) // I don't know how to accept the stringbuilder comment
   private void handleValidation( AtContext context ) throws ActionAbortException {
+    // during a redesign the ConstraintFailedException became an ActionAbortException which in turn
+    // makes this method's functionality void. (aside from typing)
     try {
       assertValidatedModel( context );
     } catch ( InvalidModelException e ) {
-      throw new ActionAbortException( "Invalid model, rule did not hold" );
+      StringBuilder b = new StringBuilder();
+      b.append( "Model failed to validate: \n" );
+      for ( SparqlConstraint s : e.getFailedConstraints() )
+        b.append( "\n - " + s.getIdentifier().stringValue() + ": " + s.getDescription() + "\n" );
+      throw new ActionAbortException( b.toString() );
     }
   }
 
@@ -118,8 +126,14 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * Handles everything needed to destroy the temporary repository.
    */
   private void destroyTmpRepository() {
-    // nothing to do here, tmpRepository destroys itself
-    tmpRepository.isInitialized(); // operate on tmpRepository so code analysis believes it to be needed.
+    try {
+      tmpRepositoryConnection.close();
+      tmpRepository.shutDown();
+    } catch ( RepositoryException e ) {
+      tmpRepository = null;
+      tmpRepositoryConnection = null;
+      LogFactory.getLog( "ModelValidator" ).error( "Error closing the repository, leaving dangling pointer." );
+    }
   }
 
 
@@ -131,9 +145,17 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @param context Context for which the constraints will be verified.
    */
   private void verifyAllConstraints( AtContext context ) throws InvalidModelException {
+    ArrayList<SparqlConstraint> failedConstraints = new ArrayList<SparqlConstraint>();
     for ( SparqlConstraint constraint : getSparqlConstraints( context.getEngine(), context.getCatalog() ) )
-      if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
-        throw new InvalidModelException( context.getCatalog(), constraint.getConstraint() );
+      try {
+        if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
+          failedConstraints.add( constraint );
+      } catch ( IllegalArgumentException e ) {
+        LogFactory.getLog( "ModelValidator" ).error( "Constraint " + constraint.getIdentifier().stringValue() + " failed to execute." );
+      }
+
+    if ( failedConstraints.size() > 0 )
+      throw new InvalidModelException( failedConstraints );
   }
 
   /**
@@ -147,10 +169,10 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
 
     String query = "" +
         Constants.SPARQL_PREFIXES +
-        " SELECT ?rule, ?sparqlQuery \n" +
+        " SELECT ?rule \n" +
         " WHERE {\n" +
-        "   ?rule a                   cterms:ValidationRule;\n" +
-        "         cterms:sparqlQuery  ?sparqlQuery;\n" +
+        "   ?rule a  cterms:ValidationRule;\n" +
+        "         cterms:severity cterms:error;\n" +
         "         ^cterms:validatedBy <" + catalog.getURI().toString() + ">.\n" +
         " }";
 
@@ -159,10 +181,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
     Collection<SparqlConstraint> constraints = new ArrayList<SparqlConstraint>();
     for ( Map<String, String> result : results )
       try {
-        QueryResultConstraint constraint = QueryResultConstraintBuilder.fromSparql( result.get( "rule" ), engine );
-        String sparqlQuery = result.get( "sparqlQuery" );
-        // we ignore the constraint property for now, as it's always Exactly.NOTHING
-        constraints.add( new SparqlConstraint( constraint, sparqlQuery ) );
+        constraints.add( new SparqlConstraint( engine, new URIImpl( result.get( "rule" ) ) ) );
       } catch ( UnknownQueryResultConstraintException e ) {
         LogFactory.getLog( "ModelValidator" ).error( e.getMessage() );
       }

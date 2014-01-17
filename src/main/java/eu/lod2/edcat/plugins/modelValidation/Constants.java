@@ -40,7 +40,7 @@ public class Constants {
    * This makes the lookup code cleaner.
    */
   public enum CtermsMatchPredicate {
-    EXACTLY( Constants.CTERMS + "matchExactly"),
+    EXACTLY(   Constants.CTERMS + "matchExactly" ),
     LESS_THAN( Constants.CTERMS + "matchLessThan"),
     MORE_THAN( Constants.CTERMS + "matchMoreThan");
 
