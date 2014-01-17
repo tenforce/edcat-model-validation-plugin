@@ -7,6 +7,8 @@ import eu.lod2.hooks.util.ActionAbortException;
  *
  * @see eu.lod2.edcat.plugins.modelValidation.ModelValidator
  */
+@SuppressWarnings( "UnusedDeclaration" )
+// Currently not used, but a nice interface for future applications.
 public class ConstraintFailedException extends ActionAbortException {
 
   /**
@@ -17,7 +19,9 @@ public class ConstraintFailedException extends ActionAbortException {
    * @param description Human description of why there was a failure.
    */
   public ConstraintFailedException( Object model, Object rule, String description ) {
-    super( "Model " + model.toString() + " was invalid because " + rule.toString() + "did not hold.  Explanation: " + description );
+    super( "" +
+        "Model " + model.toString() + " was invalid because " + rule.toString() + "did not hold. " +
+        "Explanation: " + description );
   }
 
 }

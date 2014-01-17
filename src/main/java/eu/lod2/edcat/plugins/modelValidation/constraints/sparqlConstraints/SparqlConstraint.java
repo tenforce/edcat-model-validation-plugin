@@ -80,7 +80,7 @@ public class SparqlConstraint {
    * @param description a human description of what this rule checks.
    * @param identifier  URI identifier for the constraint.
    */
-  @SuppressWarnings( "UnusedDeclaration" )
+  @SuppressWarnings("UnusedDeclaration")
   public SparqlConstraint( QueryResultConstraint constraint, String query, String description, URI identifier ) {
     this.identifier = identifier;
     this.constraint = constraint;

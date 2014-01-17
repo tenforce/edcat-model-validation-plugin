@@ -54,6 +54,19 @@ public class QueryResultConstraintBuilder {
     return Integer.parseInt( settings.get( settingName.uri ) );
   }
 
+  /**
+   * Retrieves all links (and what has been connected to the links) which are connected to the
+   * {@code constraintURI} in the configuration graph.
+   * <p/>
+   * The URI of the configuration graph is retrieved from {@link Constants#CONFIG_BASE_URI}.
+   *
+   * @param constraintURI The URI id of the Constraint.  This is the object in the searched
+   *                      triples.
+   * @param engine        Connection to the database containing the information about the
+   *                      constraint.
+   * @return Map which contains the predicates and the values of the linked information.  In the
+   * map, the key is the predicate of the linked information and the value is the object.
+   */
   private static Map<String, String> constraintConfigParameters( String constraintURI, SparqlEngine engine ) {
     // fetch results
     String query = "" +
@@ -72,5 +85,4 @@ public class QueryResultConstraintBuilder {
 
     return variables;
   }
-
 }

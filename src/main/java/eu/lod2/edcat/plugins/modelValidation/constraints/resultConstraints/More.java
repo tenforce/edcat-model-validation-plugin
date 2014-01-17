@@ -8,9 +8,7 @@ import eu.lod2.edcat.utils.QueryResult;
  */
 public class More extends QueryResultConstraint {
 
-  /**
-   * The QueryResult should contain more than this amount of elements
-   */
+  /** The QueryResult should contain more than this amount of elements */
   private int moreThanThis;
 
   /**
@@ -19,8 +17,8 @@ public class More extends QueryResultConstraint {
    * @param count Highest number of results which would still be invalid. Any QueryResult which
    *              yields more results than this is accepted as valid.
    */
-  public static More than(int count){
-    return new More(count);
+  public static More than( int count ) {
+    return new More( count );
   }
 
   /**
@@ -32,12 +30,12 @@ public class More extends QueryResultConstraint {
    * @param count Highest number of results that is still invalid.  Any QueryResult which yields
    *              more results than this will be accepted as valid.
    */
-  private More(int count) {
+  private More( int count ) {
     this.moreThanThis = count;
   }
 
   @Override
-  public boolean valid(QueryResult queryResult) {
+  public boolean valid( QueryResult queryResult ) {
     return queryResult.size() > this.moreThanThis;
   }
 }

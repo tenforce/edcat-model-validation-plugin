@@ -3,7 +3,7 @@ package eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints;
 /**
  * This error indicates that a model did not pass the validation of a supplied sparql constraint.
  */
-@SuppressWarnings( "UnusedDeclaration" )
+@SuppressWarnings("UnusedDeclaration")
 public class SparqlConstraintValidationException extends Exception {
 
   /** The constraint which did not hold. */
@@ -24,7 +24,7 @@ public class SparqlConstraintValidationException extends Exception {
    * @param constraint SparqlConstraint which failed.
    */
   public SparqlConstraintValidationException( SparqlConstraint constraint ) {
-    super(
+    super( "" +
         "Sparql constraint failed.  The check was: " + constraint.getDescription() +
         " with sparql query " + constraint.getQuery()
     );
