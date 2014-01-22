@@ -1,9 +1,11 @@
 package eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints;
 
 import eu.lod2.edcat.plugins.modelValidation.Constants;
+import eu.lod2.edcat.plugins.modelValidation.Constants.CtermsMatchPredicate;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
-import eu.lod2.edcat.plugins.modelValidation.Constants.CtermsMatchPredicate;
+import eu.lod2.query.Sparql;
+import org.openrdf.model.impl.URIImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,13 +71,15 @@ public class QueryResultConstraintBuilder {
    */
   private static Map<String, String> constraintConfigParameters( String constraintURI, SparqlEngine engine ) {
     // fetch results
-    String query = "" +
-        Constants.SPARQL_PREFIXES +
-        " SELECT ?predicate, ?object " +
-        " FROM " + "<" + Constants.CONFIG_BASE_URI + "> " +
-        " WHERE { " +
-        "   <" + constraintURI + ">" + " ?predicate ?object. " +
-        " }";
+    String query = Sparql.query( "" +
+      " @PREFIX " +
+      " SELECT ?predicate, ?object" +
+      " FROM @CONFIG_GRAPH" +
+      " WHERE {" +
+      "    $constraint ?predicate ?object." +
+      " }",
+      "constraint", new URIImpl( constraintURI ) );
+
     QueryResult results = engine.sparqlSelect( query );
 
     // convert results to query-agnostic mapping

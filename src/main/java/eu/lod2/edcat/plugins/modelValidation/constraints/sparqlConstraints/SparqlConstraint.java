@@ -1,11 +1,11 @@
 package eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints;
 
-import eu.lod2.edcat.plugins.modelValidation.Constants;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraint;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraintBuilder;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.UnknownQueryResultConstraintException;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
+import eu.lod2.query.Sparql;
 import org.openrdf.model.URI;
 
 /**
@@ -108,15 +108,16 @@ public class SparqlConstraint {
    * @param rule   URI id of the rule.
    */
   private void fetchDescriptionAndQuery( SparqlEngine engine, URI rule ) {
-    // fetch results
-    String query = "" +
-        Constants.SPARQL_PREFIXES +
-        " SELECT ?description, ?sparqlQuery \n" +
-        " FROM " + "<" + Constants.CONFIG_BASE_URI + "> \n" +
-        " WHERE { \n" +
-        "   <" + rule.stringValue() + "> cterms:sparqlQuery ?sparqlQuery; \n" +
-        "                                cterms:description ?description. \n" +
-        " }";
+    String query = Sparql.query( "" +
+      " @PREFIX " +
+      " SELECT ?description, ?sparqlQuery " +
+      " FROM @CONFIG_GRAPH " +
+      " WHERE {" +
+      "   $rule cterms:sparqlQuery ?sparqlQuery;" +
+      "         cterms:description ?description." +
+      " }",
+      "rule", rule);
+
     QueryResult results = engine.sparqlSelect( query );
 
     if ( results.size() == 0 )

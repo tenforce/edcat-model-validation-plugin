@@ -13,6 +13,7 @@ import eu.lod2.hooks.contexts.AtContext;
 import eu.lod2.hooks.handlers.dcat.AtCreateHandler;
 import eu.lod2.hooks.handlers.dcat.AtUpdateHandler;
 import eu.lod2.hooks.util.ActionAbortException;
+import eu.lod2.query.Sparql;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.*;
@@ -166,15 +167,15 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @return Collection of SparqlConstraints which aught to be verified.
    */
   private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, Catalog catalog ) {
-
-    String query = "" +
-        Constants.SPARQL_PREFIXES +
-        " SELECT ?rule \n" +
-        " WHERE {\n" +
-        "   ?rule a  cterms:ValidationRule;\n" +
-        "         cterms:severity cterms:error;\n" +
-        "         ^cterms:validatedBy <" + catalog.getURI().toString() + ">.\n" +
-        " }";
+    String query = Sparql.query("" +
+      " @PREFIX " +
+      " SELECT ?rule" +
+      " WHERE {" +
+      "   ?rule a cterms:ValidationRule;" +
+      "         cterms:severity cterms:error;" +
+      "         ^cterms:validatedBy $catalog." +
+      " }",
+      "catalog", catalog.getURI());
 
     QueryResult results = engine.sparqlSelect( query );
 

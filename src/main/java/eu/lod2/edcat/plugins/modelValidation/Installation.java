@@ -8,6 +8,7 @@ import eu.lod2.hooks.contexts.InstallationContext;
 import eu.lod2.hooks.handlers.dcat.CatalogInstallationHandler;
 import eu.lod2.hooks.handlers.dcat.InstallationHandler;
 import eu.lod2.hooks.util.ActionAbortException;
+import eu.lod2.query.Sparql;
 import org.openrdf.model.Model;
 import org.openrdf.model.URI;
 import org.openrdf.model.impl.LinkedHashModel;
@@ -97,13 +98,13 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
    * @param catalogUri URI of the newly inserted catalog.
    */
   private void setupCatalog( SparqlEngine engine, URI catalogUri ) {
-    String query = "" +
-        Constants.SPARQL_PREFIXES +
-        " SELECT ?rule \n" +
-        " FROM <" + Constants.CONFIG_BASE_URI + "> \n" +
-        " WHERE {\n" +
-        "   ?rule a cterms:ValidationRule.\n" +
-        " }";
+    String query = Sparql.query( "" +
+      " @PREFIX " +
+      " SELECT ?rule" +
+      " FROM @CONFIG_GRAPH" +
+      " WHERE {" +
+      "   ?rule a cterms:ValidationRule." +
+      " }");
 
     QueryResult rules = engine.sparqlSelect( query );
 
