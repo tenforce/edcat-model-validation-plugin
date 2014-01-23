@@ -67,27 +67,30 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
     try {
       configFileInput = Constants.VALIDATION_RULES_GRAPH_FILE_PATH.openStream();
       // parse file
-      Model validationRules = Rio.parse( configFileInput, Constants.CONFIG_BASE_URI, Constants.RULE_FILE_FORMAT );
+      Model validationRules = Rio.parse(
+        configFileInput,
+        ((URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" )).stringValue(),
+        Constants.RULE_FILE_FORMAT );
       // add statements
-      engine.addStatements( validationRules, new URIImpl( Constants.CONFIG_BASE_URI ) );
+      engine.addStatements( validationRules, (URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" ) );
       configFileInput.close();
       // catch any errors
     } catch ( IOException e ) {
       LoggerFactory
-          .getLogger( "validation.Installation" )
-          .error( "IO exception when reading " + Constants.VALIDATION_RULES_GRAPH_FILE_PATH );
+        .getLogger( "validation.Installation" )
+        .error( "IO exception when reading " + Constants.VALIDATION_RULES_GRAPH_FILE_PATH );
       if ( configFileInput != null )
         try {
           configFileInput.close();
         } catch ( IOException e1 ) {
           LoggerFactory
-              .getLogger( "validation.Installation" )
-              .error( "And couldn't clean up file descriptor for " + Constants.VALIDATION_RULES_GRAPH_FILE_PATH );
+            .getLogger( "validation.Installation" )
+            .error( "And couldn't clean up file descriptor for " + Constants.VALIDATION_RULES_GRAPH_FILE_PATH );
         }
     } catch ( RDFParseException e ) {
       LoggerFactory
-          .getLogger( "validation.Installation" )
-          .error( "Failed to parse " + Constants.VALIDATION_RULES_GRAPH_PACKAGE_PATH );
+        .getLogger( "validation.Installation" )
+        .error( "Failed to parse " + Constants.VALIDATION_RULES_GRAPH_PACKAGE_PATH );
     }
   }
 
@@ -104,7 +107,7 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
       " FROM @CONFIG_GRAPH" +
       " WHERE {" +
       "   ?rule a cterms:ValidationRule." +
-      " }");
+      " }" );
 
     QueryResult rules = engine.sparqlSelect( query );
 
@@ -112,11 +115,11 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
 
     for ( Map<String, String> ruleMap : rules )
       statementConnections.add(
-          catalogUri,
-          new URIImpl( Constants.CTERMS + "validatedBy" ),
-          new URIImpl( ruleMap.get( "rule" ) ) );
+        catalogUri,
+        Sparql.namespaced( "cterms", "validatedBy" ),
+        new URIImpl( ruleMap.get( "rule" ) ) );
 
-    engine.addStatements( statementConnections, new URIImpl( Constants.CONFIG_BASE_URI ) );
+    engine.addStatements( statementConnections, (URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" ) );
   }
 
 }

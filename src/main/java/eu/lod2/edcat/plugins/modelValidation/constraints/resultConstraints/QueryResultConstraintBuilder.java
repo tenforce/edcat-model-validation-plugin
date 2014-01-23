@@ -1,10 +1,9 @@
 package eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints;
 
-import eu.lod2.edcat.plugins.modelValidation.Constants;
-import eu.lod2.edcat.plugins.modelValidation.Constants.CtermsMatchPredicate;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
 import eu.lod2.query.Sparql;
+import org.openrdf.model.URI;
 import org.openrdf.model.impl.URIImpl;
 
 import java.util.HashMap;
@@ -27,18 +26,18 @@ public class QueryResultConstraintBuilder {
    *                                               a QueryResultConstraint due to incorrect or
    *                                               lacking information.
    */
-  public static QueryResultConstraint fromSparql( String constraintURI, SparqlEngine engine ) throws UnknownQueryResultConstraintException {
-    Map<String, String> settings = constraintConfigParameters( constraintURI, engine );
+  public static QueryResultConstraint fromSparql( URI constraintURI, SparqlEngine engine ) throws UnknownQueryResultConstraintException {
+    Map<URI, String> settings = constraintConfigParameters( constraintURI, engine );
     try {
-      if ( settings.containsKey( CtermsMatchPredicate.EXACTLY.uri ) )
+      if ( settings.containsKey( Sparql.namespaced( "cterms", "matchExactly" ) ) )
         // Exact.ly
-        return Exact.ly( intSetting( CtermsMatchPredicate.EXACTLY, settings ) );
-      else if ( settings.containsKey( CtermsMatchPredicate.LESS_THAN.uri ) )
+        return Exact.ly( intSetting( Sparql.namespaced( "cterms", "matchExactly" ), settings ) );
+      else if ( settings.containsKey( Sparql.namespaced( "cterms", "matchLessThan" ) ) )
         // Less.than
-        return Less.than( intSetting( CtermsMatchPredicate.LESS_THAN, settings ) );
-      else if ( settings.containsKey( CtermsMatchPredicate.MORE_THAN.uri ) )
+        return Less.than( intSetting( Sparql.namespaced( "cterms", "matchLessThan" ), settings ) );
+      else if ( settings.containsKey( Sparql.namespaced( "cterms", "matchMoreThan" ) ) )
         // More.than
-        return More.than( intSetting( CtermsMatchPredicate.MORE_THAN, settings ) );
+        return More.than( intSetting( Sparql.namespaced( "cterms", "matchMoreThan" ), settings ) );
     } catch ( NumberFormatException e ) {
       throw new UnknownQueryResultConstraintException( constraintURI );
     }
@@ -48,28 +47,26 @@ public class QueryResultConstraintBuilder {
   /**
    * Returns the value of a setting in a result map, assuming it has an integer value.
    *
-   * @param settingName Name of the integer setting to pull.
-   * @param settings    Map containing the key/value pairs of the settings.
+   * @param setting  Name of the integer setting to pull.
+   * @param settings Map containing the key/value pairs of the settings.
    * @return Parsed value of the setting.
    */
-  private static int intSetting( CtermsMatchPredicate settingName, Map<String, String> settings ) {
-    return Integer.parseInt( settings.get( settingName.uri ) );
+  private static int intSetting( URI setting, Map<URI, String> settings ) {
+    return Integer.parseInt( settings.get( setting ) );
   }
 
   /**
    * Retrieves all links (and what has been connected to the links) which are connected to the
    * {@code constraintURI} in the configuration graph.
-   * <p/>
-   * The URI of the configuration graph is retrieved from {@link Constants#CONFIG_BASE_URI}.
    *
-   * @param constraintURI The URI id of the Constraint.  This is the object in the searched
-   *                      triples.
-   * @param engine        Connection to the database containing the information about the
-   *                      constraint.
+   * @param constraint The URI id of the Constraint.  This is the object in the searched
+   *                   triples.
+   * @param engine     Connection to the database containing the information about the
+   *                   constraint.
    * @return Map which contains the predicates and the values of the linked information.  In the
    * map, the key is the predicate of the linked information and the value is the object.
    */
-  private static Map<String, String> constraintConfigParameters( String constraintURI, SparqlEngine engine ) {
+  private static Map<URI, String> constraintConfigParameters( URI constraint, SparqlEngine engine ) {
     // fetch results
     String query = Sparql.query( "" +
       " @PREFIX " +
@@ -78,14 +75,14 @@ public class QueryResultConstraintBuilder {
       " WHERE {" +
       "    $constraint ?predicate ?object." +
       " }",
-      "constraint", new URIImpl( constraintURI ) );
+      "constraint", constraint );
 
     QueryResult results = engine.sparqlSelect( query );
 
     // convert results to query-agnostic mapping
-    Map<String, String> variables = new HashMap<String, String>();
+    Map<URI, String> variables = new HashMap<URI, String>();
     for ( Map<String, String> result : results )
-      variables.put( result.get( "predicate" ), result.get( "object" ) );
+      variables.put( new URIImpl( result.get( "predicate" ) ), result.get( "object" ) );
 
     return variables;
   }

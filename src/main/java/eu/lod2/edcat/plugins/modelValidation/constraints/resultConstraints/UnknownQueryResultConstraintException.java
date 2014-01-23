@@ -1,5 +1,7 @@
 package eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints;
 
+import org.openrdf.model.URI;
+
 /**
  * This error shows that the specification for a QueryResultConstraint could not be parsed into a
  * valid QueryResultConstraint.  This occurs when the supplied information was not sufficient or was
@@ -14,6 +16,14 @@ public class UnknownQueryResultConstraintException extends Exception {
    */
   public UnknownQueryResultConstraintException( String source ) {
     super( "QueryResultConstraint " + source + " could not be converted to a valid QueryResultConstraint" );
+  }
+
+  /**
+   * Default constructor, but accepts a URI instead of a String.
+   * @see #UnknownQueryResultConstraintException(String)
+   */
+  public UnknownQueryResultConstraintException( URI source ) {
+    this( source.stringValue() );
   }
 
 }

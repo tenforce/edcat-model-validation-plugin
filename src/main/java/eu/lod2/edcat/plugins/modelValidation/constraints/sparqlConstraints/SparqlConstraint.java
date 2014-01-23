@@ -95,7 +95,7 @@ public class SparqlConstraint {
    */
   public SparqlConstraint( SparqlEngine engine, URI rule ) throws UnknownQueryResultConstraintException {
     this.identifier = rule;
-    this.constraint = QueryResultConstraintBuilder.fromSparql( rule.toString(), engine );
+    this.constraint = QueryResultConstraintBuilder.fromSparql( rule, engine );
     this.fetchDescriptionAndQuery( engine, rule );
   }
 
