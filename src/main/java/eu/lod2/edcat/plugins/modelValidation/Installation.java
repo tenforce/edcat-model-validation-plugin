@@ -69,10 +69,10 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
       // parse file
       Model validationRules = Rio.parse(
         configFileInput,
-        ((URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" )).stringValue(),
+        Constants.RULES_GRAPH.stringValue(),
         Constants.RULE_FILE_FORMAT );
       // add statements
-      engine.addStatements( validationRules, (URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" ) );
+      engine.addStatements( validationRules, Constants.RULES_GRAPH );
       configFileInput.close();
       // catch any errors
     } catch ( IOException e ) {
@@ -104,10 +104,11 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
     String query = Sparql.query( "" +
       " @PREFIX " +
       " SELECT ?rule" +
-      " FROM @CONFIG_GRAPH" +
+      " FROM $rulesGraph" +
       " WHERE {" +
       "   ?rule a cterms:ValidationRule." +
-      " }" );
+      " }",
+      "rulesGraph", Constants.RULES_GRAPH );
 
     QueryResult rules = engine.sparqlSelect( query );
 
@@ -119,7 +120,7 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
         Sparql.namespaced( "cterms", "validatedBy" ),
         new URIImpl( ruleMap.get( "rule" ) ) );
 
-    engine.addStatements( statementConnections, (URI) Sparql.getClassMapVariable( "CONFIG_GRAPH" ) );
+    engine.addStatements( statementConnections, Constants.RULES_GRAPH );
   }
 
 }

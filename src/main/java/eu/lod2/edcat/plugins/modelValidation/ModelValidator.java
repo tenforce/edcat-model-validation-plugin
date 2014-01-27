@@ -64,7 +64,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @throws ActionAbortException Throws an ActionAbortException if the model is not valid, thereby
    *                              canceling the request.
    */
-  @SuppressWarnings( "all" ) // I don't know how to accept the stringbuilder comment
+  @SuppressWarnings("all") // I don't know how to accept the stringbuilder comment
   private void handleValidation( AtContext context ) throws ActionAbortException {
     // during a redesign the ConstraintFailedException became an ActionAbortException which in turn
     // makes this method's functionality void. (aside from typing)
@@ -167,15 +167,17 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @return Collection of SparqlConstraints which aught to be verified.
    */
   private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, Catalog catalog ) {
-    String query = Sparql.query("" +
-      " @PREFIX " +
-      " SELECT ?rule" +
-      " WHERE {" +
-      "   ?rule a cterms:ValidationRule;" +
-      "         cterms:severity cterms:error;" +
-      "         ^cterms:validatedBy $catalog." +
-      " }",
-      "catalog", catalog.getURI());
+    String query = Sparql.query( "" +
+        " @PREFIX " +
+        " SELECT ?rule" +
+        " FROM $rulesGraph" +
+        " WHERE {" +
+        "   ?rule a                   cterms:ValidationRule;" +
+        "         cterms:severity     cterms:error;" +
+        "         ^cterms:validatedBy $catalog." +
+        " }",
+        "catalog", catalog.getURI(),
+        "rulesGraph", Constants.RULES_GRAPH );
 
     QueryResult results = engine.sparqlSelect( query );
 

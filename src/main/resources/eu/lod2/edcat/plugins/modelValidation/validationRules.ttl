@@ -123,9 +123,9 @@ cterms:validation-rule7 a cterms:ValidationRule;
     
 cterms:validation-rule8 a cterms:ValidationRule;
     cterms:matchExactly 0;
-    cterms:description "dcat:distribution should be a resource";
-    cterms:message "dcat:distribution should be a resource";
-    cterms:severity cterms:error;
+    cterms:description "dcat:distribution is advised to be a resource";
+    cterms:message "dcat:distribution is advised to be a resource";
+    cterms:severity cterms:warning;
     cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
         PREFIX dcat:<http://www.w3.org/ns/dcat#>
         SELECT

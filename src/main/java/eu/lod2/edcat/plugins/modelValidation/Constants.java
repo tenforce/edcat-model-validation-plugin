@@ -1,5 +1,7 @@
 package eu.lod2.edcat.plugins.modelValidation;
 
+import org.openrdf.model.URI;
+import org.openrdf.model.impl.URIImpl;
 import org.openrdf.rio.RDFFormat;
 
 import java.net.URL;
@@ -20,4 +22,7 @@ public class Constants {
 
   /** Input format for the Graph */
   final public static RDFFormat RULE_FILE_FORMAT = RDFFormat.TURTLE;
+
+  /** URI of the graph where we store the rules */
+  final public static URI RULES_GRAPH = new URIImpl( "http://lod2.tenforce.com/edcat/example/plugins/modelValidation" );
 }

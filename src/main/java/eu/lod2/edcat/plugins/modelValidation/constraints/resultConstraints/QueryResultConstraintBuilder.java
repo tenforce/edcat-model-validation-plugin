@@ -1,5 +1,6 @@
 package eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints;
 
+import eu.lod2.edcat.plugins.modelValidation.Constants;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
 import eu.lod2.query.Sparql;
@@ -71,11 +72,12 @@ public class QueryResultConstraintBuilder {
     String query = Sparql.query( "" +
       " @PREFIX " +
       " SELECT ?predicate, ?object" +
-      " FROM @CONFIG_GRAPH" +
+      " FROM $rulesGraph" +
       " WHERE {" +
       "    $constraint ?predicate ?object." +
       " }",
-      "constraint", constraint );
+      "constraint", constraint,
+      "rulesGraph", Constants.RULES_GRAPH);
 
     QueryResult results = engine.sparqlSelect( query );
 
