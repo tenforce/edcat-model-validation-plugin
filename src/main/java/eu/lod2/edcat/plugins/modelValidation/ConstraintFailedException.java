@@ -1,6 +1,7 @@
 package eu.lod2.edcat.plugins.modelValidation;
 
-import eu.lod2.hooks.util.ActionAbortException;
+import eu.lod2.hooks.handlers.dcat.ActionAbortException;
+import org.springframework.http.HttpStatus;
 
 /**
  * Indicates that the Model was invalid.
@@ -19,7 +20,7 @@ public class ConstraintFailedException extends ActionAbortException {
    * @param description Human description of why there was a failure.
    */
   public ConstraintFailedException( Object model, Object rule, String description ) {
-    super( "" +
+    super(HttpStatus.UNPROCESSABLE_ENTITY, "" +
         "Model " + model.toString() + " was invalid because " + rule.toString() + "did not hold. " +
         "Explanation: " + description );
   }

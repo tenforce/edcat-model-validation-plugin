@@ -7,7 +7,7 @@ import eu.lod2.hooks.contexts.CatalogInstallationContext;
 import eu.lod2.hooks.contexts.InstallationContext;
 import eu.lod2.hooks.handlers.dcat.CatalogInstallationHandler;
 import eu.lod2.hooks.handlers.dcat.InstallationHandler;
-import eu.lod2.hooks.util.ActionAbortException;
+import eu.lod2.hooks.handlers.dcat.ActionAbortException;
 import eu.lod2.query.Sparql;
 import org.openrdf.model.Model;
 import org.openrdf.model.URI;
