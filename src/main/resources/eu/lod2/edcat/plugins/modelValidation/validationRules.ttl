@@ -3,22 +3,20 @@
 @prefix edcat: <http://lod2.tenforce.com/edcat/terms/>.
 @prefix cterms: <http://lod2.tenforce.com/edcat/terms/config/>.
 @prefix catalogs: <http://lod2.tenforce.com/edcat/catalogs/>.
+@prefix dcterms: <http://purl.org/dc/terms/>.
 
 cterms:validation-rule0 a cterms:ValidationRule;
-    cterms:matchExactly 0;
+    cterms:matchMoreThan 0;
     cterms:description "description is a required property for dataset";
     cterms:message "no description defined for this dataset";
     cterms:severity cterms:error;
     cterms:sparqlQuery "PREFIX dcterms: <http://purl.org/dc/terms/>
         prefix dcat:<http://www.w3.org/ns/dcat#>
         SELECT
-        ?s ?p ?o
+        ?desc
         WHERE {
         ?s a dcat:Dataset.
-        OPTIONAL {?s dcterms:description ?desc}.
-        FILTER (!BOUND(?desc)).
-        BIND(rdf:type AS ?p).
-        BIND(dcat:Dataset AS ?o).
+        ?s dcterms:description ?desc.
         }".
 
 cterms:validation-rule2 a cterms:ValidationRule;
