@@ -7,6 +7,7 @@ import eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints.Sparq
 import eu.lod2.edcat.utils.Catalog;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
+import eu.lod2.edcat.utils.TemporaryRepository;
 import eu.lod2.hooks.constraints.Constraint;
 import eu.lod2.hooks.constraints.Priority;
 import eu.lod2.hooks.contexts.AtContext;
@@ -16,13 +17,14 @@ import eu.lod2.hooks.util.ActionAbortException;
 import eu.lod2.query.Sparql;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.model.impl.URIImpl;
-import org.openrdf.query.*;
+import org.openrdf.query.MalformedQueryException;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
-import org.openrdf.repository.sail.SailRepository;
-import org.openrdf.repository.sail.SailRepositoryConnection;
-import org.openrdf.sail.memory.MemoryStore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 
 /**
@@ -91,7 +93,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   private void assertValidatedModel( AtContext ctx ) throws InvalidModelException {
     try {
       setupTmpRepository();
-      this.tmpRepositoryConnection.add( ctx.getStatements() );
+      tmpRepository.add( ctx.getStatements() );
       verifyAllConstraints( ctx );
     } catch ( RepositoryException e ) {
       e.printStackTrace();
@@ -106,11 +108,8 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   /**
    * The repository used for temporarily storing the triples.
    */
-  private SailRepository tmpRepository;
-  /**
-   * Connection for temporarily storing the triples through.
-   */
-  private SailRepositoryConnection tmpRepositoryConnection;
+  private TemporaryRepository tmpRepository;
+
 
   /**
    * Sets up a temporary repository and its connection.
@@ -118,9 +117,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * @throws RepositoryException Thrown when the repository could not be initialized.
    */
   private void setupTmpRepository() throws RepositoryException {
-    this.tmpRepository = new SailRepository( new MemoryStore() );
-    this.tmpRepository.initialize();
-    this.tmpRepositoryConnection = this.tmpRepository.getConnection();
+    this.tmpRepository = new TemporaryRepository();
   }
 
   /**
@@ -128,11 +125,9 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    */
   private void destroyTmpRepository() {
     try {
-      tmpRepositoryConnection.close();
-      tmpRepository.shutDown();
+      tmpRepository.tearDown();
     } catch ( RepositoryException e ) {
       tmpRepository = null;
-      tmpRepositoryConnection = null;
       LogFactory.getLog( "ModelValidator" ).error( "Error closing the repository, leaving dangling pointer." );
     }
   }
@@ -201,21 +196,11 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    */
   private boolean verifySparqlConstraint( String query, QueryResultConstraint... validators ) {
     try {
-      TupleQueryResult sparqlResult = this.tmpRepositoryConnection.prepareTupleQuery( QueryLanguage.SPARQL, query ).evaluate();
-
-      // convert sparqlResult to QueryResult
-      QueryResult results = new QueryResult();
-      while ( sparqlResult.hasNext() ) {
-        BindingSet set = sparqlResult.next();
-        Map<String, String> currentRow = new HashMap<String, String>();
-        for ( String name : set.getBindingNames() )
-          currentRow.put( name, set.getValue( name ).stringValue() );
-        results.add( currentRow );
-      }
+      QueryResult sparqlResult = tmpRepository.sparqlQuery( query );
 
       // verify QueryResult
       for ( QueryResultConstraint validator : validators )
-        if ( !validator.valid( results ) )
+        if ( !validator.valid( sparqlResult ) )
           return false;
 
       return true;
