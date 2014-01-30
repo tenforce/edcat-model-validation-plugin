@@ -11,15 +11,16 @@ import eu.lod2.edcat.utils.TemporaryRepository;
 import eu.lod2.hooks.constraints.Constraint;
 import eu.lod2.hooks.constraints.Priority;
 import eu.lod2.hooks.contexts.AtContext;
+import eu.lod2.hooks.handlers.dcat.ActionAbortException;
 import eu.lod2.hooks.handlers.dcat.AtCreateHandler;
 import eu.lod2.hooks.handlers.dcat.AtUpdateHandler;
-import eu.lod2.hooks.handlers.dcat.ActionAbortException;
 import eu.lod2.query.Sparql;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.repository.RepositoryException;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
       b.append( "Model failed to validate: \n" );
       for ( SparqlConstraint s : e.getFailedConstraints() )
         b.append( "\n - " + s.getIdentifier().stringValue() + ": " + s.getDescription() + "\n" );
-      throw new ActionAbortException(HttpStatus.UNPROCESSABLE_ENTITY, b.toString() );
+      throw new ActionAbortException( HttpStatus.UNPROCESSABLE_ENTITY, b.toString() );
     }
   }
 
