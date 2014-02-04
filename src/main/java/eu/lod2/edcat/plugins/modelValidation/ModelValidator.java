@@ -4,7 +4,7 @@ import eu.lod2.edcat.plugins.modelValidation.constraints.InvalidModelException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraint;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.UnknownQueryResultConstraintException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints.SparqlConstraint;
-import eu.lod2.edcat.utils.Catalog;
+import eu.lod2.edcat.utils.CatalogService;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.SparqlEngine;
 import eu.lod2.edcat.utils.TemporaryRepository;
@@ -143,7 +143,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    */
   private void verifyAllConstraints( AtContext context ) throws InvalidModelException {
     ArrayList<SparqlConstraint> failedConstraints = new ArrayList<SparqlConstraint>();
-    for ( SparqlConstraint constraint : getSparqlConstraints( context.getEngine(), context.getCatalog() ) )
+    for ( SparqlConstraint constraint : getSparqlConstraints( context.getEngine(), context.getCatalogService() ) )
       try {
         if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
           failedConstraints.add( constraint );
@@ -159,10 +159,10 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    * Fetches all constraints which apply to catalog from engine.
    *
    * @param engine  Engine which has a connection to the configuration graph.
-   * @param catalog Catalog for which we want to retrieve the constraints.
+   * @param catalogService CatalogService for which we want to retrieve the constraints.
    * @return Collection of SparqlConstraints which aught to be verified.
    */
-  private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, Catalog catalog ) {
+  private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, CatalogService catalogService ) {
     String query = Sparql.query( "" +
         " @PREFIX " +
         " SELECT ?rule" +
@@ -172,7 +172,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
         "         cterms:severity     cterms:error;" +
         "         ^cterms:validatedBy $catalog." +
         " }",
-        "catalog", catalog.getURI(),
+        "catalog", catalogService.getURI(),
         "rulesGraph", Constants.RULES_GRAPH );
 
     QueryResult results = engine.sparqlSelect( query );
