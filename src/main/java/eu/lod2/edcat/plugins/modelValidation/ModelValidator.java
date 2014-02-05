@@ -6,7 +6,6 @@ import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.Unkno
 import eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints.SparqlConstraint;
 import eu.lod2.edcat.utils.CatalogService;
 import eu.lod2.edcat.utils.QueryResult;
-import eu.lod2.edcat.utils.SparqlEngine;
 import eu.lod2.edcat.utils.TemporaryRepository;
 import eu.lod2.hooks.constraints.Constraint;
 import eu.lod2.hooks.constraints.Priority;
@@ -14,7 +13,7 @@ import eu.lod2.hooks.contexts.AtContext;
 import eu.lod2.hooks.handlers.dcat.ActionAbortException;
 import eu.lod2.hooks.handlers.dcat.AtCreateHandler;
 import eu.lod2.hooks.handlers.dcat.AtUpdateHandler;
-import eu.lod2.query.Sparql;
+import eu.lod2.query.Db;
 import org.apache.commons.logging.LogFactory;
 import org.openrdf.model.impl.URIImpl;
 import org.openrdf.query.MalformedQueryException;
@@ -143,7 +142,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    */
   private void verifyAllConstraints( AtContext context ) throws InvalidModelException {
     ArrayList<SparqlConstraint> failedConstraints = new ArrayList<SparqlConstraint>();
-    for ( SparqlConstraint constraint : getSparqlConstraints( context.getEngine(), context.getCatalogService() ) )
+    for ( SparqlConstraint constraint : getSparqlConstraints( context.getCatalogService() ) )
       try {
         if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
           failedConstraints.add( constraint );
@@ -158,12 +157,11 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   /**
    * Fetches all constraints which apply to catalog from engine.
    *
-   * @param engine  Engine which has a connection to the configuration graph.
    * @param catalogService CatalogService for which we want to retrieve the constraints.
    * @return Collection of SparqlConstraints which aught to be verified.
    */
-  private Collection<SparqlConstraint> getSparqlConstraints( SparqlEngine engine, CatalogService catalogService ) {
-    String query = Sparql.query( "" +
+  private Collection<SparqlConstraint> getSparqlConstraints( CatalogService catalogService ) {
+    QueryResult results = Db.query( "" +
         " @PREFIX " +
         " SELECT ?rule" +
         " FROM $rulesGraph" +
@@ -175,12 +173,10 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
         "catalog", catalogService.getURI(),
         "rulesGraph", Constants.RULES_GRAPH );
 
-    QueryResult results = engine.sparqlSelect( query );
-
     Collection<SparqlConstraint> constraints = new ArrayList<SparqlConstraint>();
     for ( Map<String, String> result : results )
       try {
-        constraints.add( new SparqlConstraint( engine, new URIImpl( result.get( "rule" ) ) ) );
+        constraints.add( new SparqlConstraint( new URIImpl( result.get( "rule" ) ) ) );
       } catch ( UnknownQueryResultConstraintException e ) {
         LogFactory.getLog( "ModelValidator" ).error( e.getMessage() );
       }

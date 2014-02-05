@@ -1,13 +1,13 @@
 package eu.lod2.edcat.plugins.modelValidation;
 
 import eu.lod2.edcat.utils.QueryResult;
-import eu.lod2.edcat.utils.SparqlEngine;
 import eu.lod2.hooks.constraints.Priority;
 import eu.lod2.hooks.contexts.CatalogInstallationContext;
 import eu.lod2.hooks.contexts.InstallationContext;
+import eu.lod2.hooks.handlers.dcat.ActionAbortException;
 import eu.lod2.hooks.handlers.dcat.CatalogInstallationHandler;
 import eu.lod2.hooks.handlers.dcat.InstallationHandler;
-import eu.lod2.hooks.handlers.dcat.ActionAbortException;
+import eu.lod2.query.Db;
 import eu.lod2.query.Sparql;
 import org.openrdf.model.Model;
 import org.openrdf.model.URI;
@@ -34,12 +34,12 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
 
   @Override
   public void handleInstall( InstallationContext context ) throws ActionAbortException {
-    setupDatabase( context.getEngine() );
+    setupDatabase( );
   }
 
   @Override
   public void handleCatalogInstall( CatalogInstallationContext context ) throws ActionAbortException {
-    setupCatalog( context.getEngine(), context.getCatalogURI() );
+    setupCatalog( context.getCatalogURI() );
   }
 
 
@@ -58,10 +58,8 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
    * <p/>
    * Once these rules have been installed, they may be enabled and disabled on a per-catalog basis
    * by connecting the Catalog to the the rule through the cterms:validatedBy predicate.
-   *
-   * @param engine Connection to the RDF store in which the validation rules need to be described.
    */
-  private void setupDatabase( SparqlEngine engine ) {
+  private void setupDatabase( ) {
     // fetch file
     InputStream configFileInput = null;
     try {
@@ -72,7 +70,7 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
         Constants.RULES_GRAPH.stringValue(),
         Constants.RULE_FILE_FORMAT );
       // add statements
-      engine.addStatements( validationRules, Constants.RULES_GRAPH );
+      Db.add( validationRules, Constants.RULES_GRAPH );
       configFileInput.close();
       // catch any errors
     } catch ( IOException e ) {
@@ -97,11 +95,10 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
   /**
    * Sets up a new catalog, linking it to all currently known rules.
    *
-   * @param engine     Connection to the RDF store in which the rule connections will be inserted.
    * @param catalogUri URI of the newly inserted catalog.
    */
-  private void setupCatalog( SparqlEngine engine, URI catalogUri ) {
-    String query = Sparql.query( "" +
+  private void setupCatalog( URI catalogUri ) {
+    QueryResult rules = Db.query( "" +
       " @PREFIX " +
       " SELECT ?rule" +
       " FROM $rulesGraph" +
@@ -109,8 +106,6 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
       "   ?rule a cterms:ValidationRule." +
       " }",
       "rulesGraph", Constants.RULES_GRAPH );
-
-    QueryResult rules = engine.sparqlSelect( query );
 
     Model statementConnections = new LinkedHashModel();
 
@@ -120,7 +115,7 @@ public class Installation implements InstallationHandler, CatalogInstallationHan
         Sparql.namespaced( "cterms", "validatedBy" ),
         new URIImpl( ruleMap.get( "rule" ) ) );
 
-    engine.addStatements( statementConnections, Constants.RULES_GRAPH );
+    Db.add( statementConnections, Constants.RULES_GRAPH );
   }
 
 }

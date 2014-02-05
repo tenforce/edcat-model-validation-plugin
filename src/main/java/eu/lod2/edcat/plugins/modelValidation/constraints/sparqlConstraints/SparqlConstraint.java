@@ -5,8 +5,7 @@ import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.Query
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraintBuilder;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.UnknownQueryResultConstraintException;
 import eu.lod2.edcat.utils.QueryResult;
-import eu.lod2.edcat.utils.SparqlEngine;
-import eu.lod2.query.Sparql;
+import eu.lod2.query.Db;
 import org.openrdf.model.URI;
 
 /**
@@ -91,13 +90,12 @@ public class SparqlConstraint {
   /**
    * Constructs a new SparqlConstraint based on the sparql engine and the URI of the constraint.
    *
-   * @param engine provides a connection to the database which contains the graph of constraints.
    * @param rule   URI id of the constraint.
    */
-  public SparqlConstraint( SparqlEngine engine, URI rule ) throws UnknownQueryResultConstraintException {
+  public SparqlConstraint( URI rule ) throws UnknownQueryResultConstraintException {
     this.identifier = rule;
-    this.constraint = QueryResultConstraintBuilder.fromSparql( rule, engine );
-    this.fetchDescriptionAndQuery( engine, rule );
+    this.constraint = QueryResultConstraintBuilder.fromSparql( rule );
+    this.fetchDescriptionAndQuery( rule );
   }
 
   // --- HELPERS
@@ -105,22 +103,19 @@ public class SparqlConstraint {
   /**
    * Fetches the description and the sparql query from a supplied constraint.
    *
-   * @param engine provides a connection to the database which contains the graph of constraints.
    * @param rule   URI id of the rule.
    */
-  private void fetchDescriptionAndQuery( SparqlEngine engine, URI rule ) {
-    String query = Sparql.query( "" +
-      " @PREFIX " +
-      " SELECT ?description, ?sparqlQuery " +
-      " FROM $rulesGraph " +
-      " WHERE {" +
-      "   $rule cterms:sparqlQuery ?sparqlQuery;" +
-      "         cterms:description ?description." +
-      " }",
-      "rule", rule,
-      "rulesGraph", Constants.RULES_GRAPH);
-
-    QueryResult results = engine.sparqlSelect( query );
+  private void fetchDescriptionAndQuery( URI rule ) {
+    QueryResult results = Db.query( "" +
+        " @PREFIX " +
+        " SELECT ?description, ?sparqlQuery " +
+        " FROM $rulesGraph " +
+        " WHERE {" +
+        "   $rule cterms:sparqlQuery ?sparqlQuery;" +
+        "         cterms:description ?description." +
+        " }",
+        "rule", rule,
+        "rulesGraph", Constants.RULES_GRAPH );
 
     if ( results.size() == 0 )
       throw new IllegalArgumentException( "Could not find description of " + rule + " in store." );
