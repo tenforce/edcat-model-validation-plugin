@@ -1,10 +1,10 @@
 package eu.lod2.edcat.plugins.modelValidation;
 
+import eu.lod2.edcat.model.Catalog;
 import eu.lod2.edcat.plugins.modelValidation.constraints.InvalidModelException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.QueryResultConstraint;
 import eu.lod2.edcat.plugins.modelValidation.constraints.resultConstraints.UnknownQueryResultConstraintException;
 import eu.lod2.edcat.plugins.modelValidation.constraints.sparqlConstraints.SparqlConstraint;
-import eu.lod2.edcat.utils.CatalogService;
 import eu.lod2.edcat.utils.QueryResult;
 import eu.lod2.edcat.utils.TemporaryRepository;
 import eu.lod2.hooks.constraints.Constraint;
@@ -142,7 +142,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
    */
   private void verifyAllConstraints( AtContext context ) throws InvalidModelException {
     ArrayList<SparqlConstraint> failedConstraints = new ArrayList<SparqlConstraint>();
-    for ( SparqlConstraint constraint : getSparqlConstraints( context.getCatalogService() ) )
+    for ( SparqlConstraint constraint : getSparqlConstraints( context.getCatalog() ) )
       try {
         if ( !verifySparqlConstraint( constraint.getQuery(), constraint.getConstraint() ) )
           failedConstraints.add( constraint );
@@ -157,10 +157,10 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
   /**
    * Fetches all constraints which apply to catalog from engine.
    *
-   * @param catalogService CatalogService for which we want to retrieve the constraints.
+   * @param catalog Catalog for which we want to retrieve the constraints.
    * @return Collection of SparqlConstraints which aught to be verified.
    */
-  private Collection<SparqlConstraint> getSparqlConstraints( CatalogService catalogService ) {
+  private Collection<SparqlConstraint> getSparqlConstraints( Catalog catalog) {
     QueryResult results = Db.query( "" +
         " @PREFIX " +
         " SELECT ?rule" +
@@ -170,7 +170,7 @@ public class ModelValidator implements AtCreateHandler, AtUpdateHandler {
         "         cterms:severity     cterms:error;" +
         "         ^cterms:validatedBy $catalog." +
         " }",
-        "catalog", catalogService.getURI(),
+        "catalog", catalog.getUri(),
         "rulesGraph", Constants.RULES_GRAPH );
 
     Collection<SparqlConstraint> constraints = new ArrayList<SparqlConstraint>();
